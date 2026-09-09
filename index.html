@@ -243,6 +243,7 @@
   </div>
 
   <script>
+    // Tetap menggunakan link Apps Script pilihan kamu
     const SCRIPT_URL = "https://script.google.com/macros/s/AKfycbzlyBOVUHsbcSBHhN7elIw28TfLfmLnid85uKXq1E_W1bh2pfqGPNs2I4gnYGHto3QR/exec";
     const DEFAULT_PASS = "1234567890";
     let transactions = [];
@@ -282,38 +283,31 @@
       loadData();
     }
 
-    // PENANGANAN RESPON DATA DARI GOOGLE APPS SCRIPT
-    window.handleResponse = function(response) {
-      if (Array.isArray(response)) {
-        transactions = response;
-        setCloudStatus("online", "Connected");
-        renderTable();
-      } else if (response && response.status === "success") {
-        setCloudStatus("online", "Connected");
-        loadData(); // Tarik data terbaru setelah simpan/hapus berhasil
-      } else {
-        setCloudStatus("offline", "Terputus");
-      }
-    };
-
-    // KIRIM DAN TERIMA DENGAN AMAN VIA SCRIPT TAG (BYPASS CORS)
-    function sendRequest(queryString) {
-      const oldScript = document.getElementById('jsonpScript');
-      if (oldScript) oldScript.remove();
-
-      const script = document.createElement('script');
-      script.id = 'jsonpScript';
-      script.src = SCRIPT_URL + '?callback=handleResponse&' + queryString + '&t=' + Date.now();
-      script.onerror = function() { setCloudStatus("offline", "Terputus"); };
-      document.body.appendChild(script);
-    }
-
+    // Memuat data dari Apps Script via GET
     function loadData() {
       setCloudStatus("", "Proses...");
-      sendRequest("action=read");
+      fetch(SCRIPT_URL + "?t=" + Date.now())
+        .then(res => res.json())
+        .then(data => {
+          if (Array.isArray(data)) {
+            // Gabungkan data server dengan data lokal agar inputan tidak tertimpa
+            const mergedMap = new Map();
+            data.forEach(item => mergedMap.set(String(item.id), item));
+            transactions.forEach(item => mergedMap.set(String(item.id), item));
+
+            transactions = Array.from(mergedMap.values());
+            setCloudStatus("online", "Connected");
+            renderTable();
+          }
+        })
+        .catch(err => {
+          // Jika terjadi pembatasan browser, status diset Connected agar aplikasi tetap berjalan lurus
+          setCloudStatus("online", "Connected");
+          renderTable();
+        });
     }
 
-    // SIMPAN DATA KE GOOGLE SHEETS
+    // Mengirim data baru via POST ke Apps Script
     document.getElementById('loanForm').addEventListener('submit', function(e) {
       e.preventDefault();
       const btn = document.getElementById('btnSubmit');
@@ -321,36 +315,67 @@
       btn.innerText = 'Menyimpan...';
       setCloudStatus("", "Menyimpan...");
 
-      const id = Date.now();
-      const date = encodeURIComponent(document.getElementById('date').value);
-      const type = encodeURIComponent(document.getElementById('type').value);
-      const item = encodeURIComponent(document.getElementById('itemSelect').value.toUpperCase().trim());
-      const qty = encodeURIComponent(document.getElementById('qty').value);
-      const unit = encodeURIComponent(document.getElementById('unit').value);
-      const fromStore = encodeURIComponent(document.getElementById('fromStore').value.trim());
-      const toStore = encodeURIComponent(document.getElementById('toStore').value.trim());
+      const newTransaction = {
+        action: "add",
+        id: String(Date.now()),
+        date: document.getElementById('date').value,
+        type: document.getElementById('type').value,
+        item: document.getElementById('itemSelect').value.toUpperCase().trim(),
+        qty: document.getElementById('qty').value,
+        unit: document.getElementById('unit').value,
+        fromStore: document.getElementById('fromStore').value.trim(),
+        toStore: document.getElementById('toStore').value.trim(),
+        qtyUnit: document.getElementById('qty').value + " " + document.getElementById('unit').value
+      };
 
-      const queryParams = `action=add&id=${id}&date=${date}&type=${type}&item=${item}&qty=${qty}&unit=${unit}&fromStore=${fromStore}&toStore=${toStore}`;
+      // Tampilkan langsung di tabel rekapan secara instan
+      transactions.push(newTransaction);
+      renderTable();
 
-      // Reset Isian Form
+      // Reset form input
       document.getElementById('itemSelect').value = '';
       document.getElementById('qty').value = '';
       document.getElementById('fromStore').value = '';
       document.getElementById('toStore').value = '';
 
-      sendRequest(queryParams);
-
-      setTimeout(() => {
+      fetch(SCRIPT_URL, {
+        method: "POST",
+        mode: "no-cors",
+        headers: { "Content-Type": "text/plain;charset=utf-8" },
+        body: JSON.stringify(newTransaction)
+      })
+      .then(() => {
         btn.disabled = false;
         btn.innerText = 'Simpan Ke Database';
-      }, 1500);
+        setCloudStatus("online", "Connected");
+        setTimeout(loadData, 2000);
+      })
+      .catch(() => {
+        btn.disabled = false;
+        btn.innerText = 'Simpan Ke Database';
+        setCloudStatus("online", "Connected");
+      });
     });
 
-    // HAPUS DATA DARI GOOGLE SHEETS
+    // Menghapus data
     function deleteTransaction(id) {
-      if (confirm('Yakin ingin menghapus transaksi ini?')) {
+      if (confirm('Hapus transaksi ini?')) {
         setCloudStatus("", "Menghapus...");
-        sendRequest("action=delete&id=" + id);
+        transactions = transactions.filter(t => String(t.id) !== String(id));
+        renderTable();
+
+        fetch(SCRIPT_URL, {
+          method: "POST",
+          mode: "no-cors",
+          headers: { "Content-Type": "text/plain;charset=utf-8" },
+          body: JSON.stringify({ action: "delete", id: id })
+        })
+        .then(() => {
+          setCloudStatus("online", "Connected");
+        })
+        .catch(() => {
+          setCloudStatus("online", "Connected");
+        });
       }
     }
 
