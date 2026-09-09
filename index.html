@@ -4,14 +4,11 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>PANGKALAN DATA MIXUE SUKOREJO</title>
-  
-  <link rel="manifest" href="data:application/manifest+json;utf8,{%22name%22:%22Mixue%20Loan%22,%22short_name%22:%22Mixue%20Loan%22,%22start_url%22:%22https://script.google.com/macros/s/AKfycbxGs_3yC83d_oy0HFz33tE_Ek4Ec9tSU9JqeQWw71sTK3-I5GzqBqueocxMFMWVs3Vk/exec%22,%22display%22:%22standalone%22,%22background_color%22:%22%23e60012%22,%22theme_color%22:%22%23e60012%22}">
   <meta name="theme-color" content="#e60012">
 
   <style>
     :root {
       --primary: #e60012;
-      --primary-hover: #cc0010;
       --bg-color: #f8f9fa;
       --card-bg: #ffffff;
       --border-color: #e0e0e0;
@@ -22,24 +19,8 @@
     body { background-color: var(--bg-color); color: var(--text-color); padding: 12px; }
     .container { max-width: 1000px; margin: 0 auto; }
 
-    #loginScreen {
-      display: flex;
-      justify-content: center;
-      align-items: center;
-      min-height: 80vh;
-    }
-
-    .login-card {
-      background: white;
-      padding: 30px 20px;
-      border-radius: 12px;
-      box-shadow: 0 4px 15px rgba(0,0,0,0.1);
-      width: 100%;
-      max-width: 380px;
-      text-align: center;
-      border: 1px solid var(--border-color);
-    }
-
+    #loginScreen { display: flex; justify-content: center; align-items: center; min-height: 80vh; }
+    .login-card { background: white; padding: 30px 20px; border-radius: 12px; box-shadow: 0 4px 15px rgba(0,0,0,0.1); width: 100%; max-width: 380px; text-align: center; border: 1px solid var(--border-color); }
     .login-logo { font-size: 3.5rem; margin-bottom: 10px; }
     .login-title { font-size: 1.1rem; font-weight: bold; color: var(--primary); margin-bottom: 20px; line-height: 1.3; }
     .error-msg { color: red; font-size: 0.85rem; margin-top: 10px; display: none; }
@@ -57,71 +38,20 @@
       position: relative;
     }
     
-    header h1 {
-      font-size: 1.1rem;
-      font-weight: 800;
-      margin-bottom: 4px;
-      padding-right: 75px;
-      text-align: left;
-      line-height: 1.3;
-    }
-    
+    header h1 { font-size: 1.1rem; font-weight: 800; margin-bottom: 4px; padding-right: 75px; text-align: left; line-height: 1.3; }
     header p { font-size: 0.75rem; opacity: 0.9; text-align: left; }
 
-    .header-actions {
-      position: absolute;
-      right: 12px;
-      top: 15px;
-      display: flex;
-      flex-direction: column;
-      align-items: flex-end;
-      gap: 6px;
-    }
+    .header-actions { position: absolute; right: 12px; top: 15px; display: flex; flex-direction: column; align-items: flex-end; gap: 6px; }
 
-    .cloud-status {
-      font-size: 0.65rem;
-      font-weight: bold;
-      padding: 3px 8px;
-      border-radius: 10px;
-      background: rgba(255,255,255,0.2);
-      color: white;
-      display: flex;
-      align-items: center;
-      gap: 4px;
-    }
-
+    .cloud-status { font-size: 0.65rem; font-weight: bold; padding: 3px 8px; border-radius: 10px; background: rgba(255,255,255,0.2); color: white; display: flex; align-items: center; gap: 4px; }
     .status-dot { width: 8px; height: 8px; border-radius: 50%; background-color: #ffd166; }
     .status-dot.online { background-color: #06d6a0; }
     .status-dot.offline { background-color: #ef476f; }
 
-    .btn-logout {
-      background: rgba(255,255,255,0.25);
-      color: white;
-      border: 1px solid rgba(255,255,255,0.5);
-      padding: 4px 8px;
-      border-radius: 6px;
-      cursor: pointer;
-      font-size: 0.7rem;
-      font-weight: 600;
-    }
+    .btn-logout { background: rgba(255,255,255,0.25); color: white; border: 1px solid rgba(255,255,255,0.5); padding: 4px 8px; border-radius: 6px; cursor: pointer; font-size: 0.7rem; font-weight: 600; }
 
-    .card {
-      background: var(--card-bg);
-      border-radius: 12px;
-      padding: 16px;
-      margin-bottom: 15px;
-      box-shadow: 0 2px 6px rgba(0,0,0,0.04);
-      border: 1px solid var(--border-color);
-    }
-
-    .card-title {
-      font-size: 1.05rem;
-      font-weight: 700;
-      margin-bottom: 12px;
-      color: var(--primary);
-      border-bottom: 2px solid var(--bg-color);
-      padding-bottom: 6px;
-    }
+    .card { background: var(--card-bg); border-radius: 12px; padding: 16px; margin-bottom: 15px; box-shadow: 0 2px 6px rgba(0,0,0,0.04); border: 1px solid var(--border-color); }
+    .card-title { font-size: 1.05rem; font-weight: 700; margin-bottom: 12px; color: var(--primary); border-bottom: 2px solid var(--bg-color); padding-bottom: 6px; }
 
     .form-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 12px; }
     .form-group { display: flex; flex-direction: column; }
@@ -134,30 +64,8 @@
     .qty-group input { flex: 2; }
     .qty-group select { flex: 1; }
 
-    .btn {
-      background-color: var(--primary);
-      color: white;
-      border: none;
-      padding: 11px;
-      border-radius: 6px;
-      font-size: 0.95rem;
-      font-weight: bold;
-      cursor: pointer;
-      width: 100%;
-      margin-top: 12px;
-    }
-
-    .btn-excel {
-      background-color: #1d6f42;
-      color: white;
-      border: none;
-      padding: 7px 12px;
-      border-radius: 6px;
-      font-weight: bold;
-      cursor: pointer;
-      font-size: 0.8rem;
-      white-space: nowrap;
-    }
+    .btn { background-color: var(--primary); color: white; border: none; padding: 11px; border-radius: 6px; font-size: 0.95rem; font-weight: bold; cursor: pointer; width: 100%; margin-top: 12px; }
+    .btn-excel { background-color: #1d6f42; color: white; border: none; padding: 7px 12px; border-radius: 6px; font-weight: bold; cursor: pointer; font-size: 0.8rem; white-space: nowrap; }
 
     .filter-container { display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 8px; margin-bottom: 12px; }
     .summary-card { background: white; border-radius: 12px; padding: 14px; box-shadow: 0 2px 6px rgba(0,0,0,0.04); border: 1px solid var(--border-color); }
@@ -183,18 +91,10 @@
 
     .loading-overlay { text-align: center; padding: 15px; font-weight: bold; color: #666; }
     footer { text-align: center; margin-top: 20px; padding: 10px; font-size: 0.75rem; color: #888; }
-
-    @media print {
-      body { background: white; padding: 0; }
-      .card, .btn-delete, .filter-container, .btn-excel, .header-actions { display: none; }
-      .summary-card { border: none; box-shadow: none; padding: 0; }
-      .col-aksi { display: none; }
-    }
   </style>
 </head>
 <body>
 
-  <!-- HALAMAN LOGIN -->
   <div id="loginScreen">
     <div class="login-card">
       <div class="login-logo">🍦</div>
@@ -210,7 +110,6 @@
     </div>
   </div>
 
-  <!-- APLIKASI UTAMA -->
   <div id="mainApp" class="container">
     <header>
       <div class="header-actions">
@@ -224,17 +123,14 @@
       <p>Pencatatan Pinjam Meminjam Barang Antar Toko</p>
     </header>
 
-    <!-- FORM INPUT -->
     <div class="card">
       <div class="card-title">Input Mutasi Barang</div>
       <form id="loanForm">
         <div class="form-grid">
-          
           <div class="form-group">
             <label for="date">Tanggal Transaksi</label>
             <input type="date" id="date" required>
           </div>
-
           <div class="form-group">
             <label for="type">Jenis Transaksi</label>
             <select id="type" required>
@@ -242,7 +138,6 @@
               <option value="Dipinjamkan">Dipinjamkan</option>
             </select>
           </div>
-
           <div class="form-group">
             <label for="itemSelect">Nama Barang</label>
             <input list="itemList" id="itemSelect" placeholder="Ketik / Pilih nama barang..." required>
@@ -284,30 +179,9 @@
               <option value="FILTER ELEMENT SET">
               <option value="FILTER PP COTTON">
               <option value="PAPER TRAY">
-              <option value="SNOW KING FRUIT STIRRING CUP ICE">
-              <option value="500 PAPER CUP">
-              <option value="THERMAL BAG">
-              <option value="SNOWKING TUMBLER BLOCK LEMON RIDER">
-              <option value="SNOWKING VERSATILE DAILY VIGURE">
-              <option value="SNOWKING AIRPLANE">
-              <option value="MIXUE DANCING TOYS KEYCHAIN">
-              <option value="BLESSING VIGURE SERIES">
-              <option value="SNOWKING TUMBLER BLOCK YACHT">
-              <option value="SNOWKING TUMBLER BLOCK SPACESHIP">
-              <option value="SNOWKING TUMBLER BLOCK CAMPING">
-              <option value="SNOWKING TUMBLER BLOCK KITIE">
-              <option value="SCAPTER SNOWKING DOLL">
-              <option value="MIXUE SPIN TOYS KEYCHAIN">
-              <option value="MIXUE PIN BALL TOYS KEYCHAIN">
-              <option value="SNOWKING BLOCK TEA TIME">
-              <option value="SNOWKING PLUSH FLOWER">
-              <option value="SNOWKING BLOCK YOGA">
-              <option value="SNOWKING TUMBLER BLOCK COFFEE">
-              <option value="SPRING SERIES REFRIGERATOR">
               <option value="LABEL 40X60">
             </datalist>
           </div>
-
           <div class="form-group">
             <label>Jumlah & Satuan</label>
             <div class="qty-group">
@@ -319,23 +193,19 @@
               </select>
             </div>
           </div>
-
           <div class="form-group">
             <label for="fromStore">Dari Toko (Asal)</label>
             <input type="text" id="fromStore" placeholder="Contoh: Mixue Sukorejo" required>
           </div>
-
           <div class="form-group">
             <label for="toStore">Ke Toko (Tujuan)</label>
             <input type="text" id="toStore" placeholder="Contoh: Mixue Pemuda" required>
           </div>
-
         </div>
         <button type="submit" class="btn" id="btnSubmit">Simpan Ke Database</button>
       </form>
     </div>
 
-    <!-- HASIL REKAPAN -->
     <div class="summary-card">
       <div class="filter-container">
         <div class="card-title" style="margin:0; border:none; font-size:0.95rem;">Rekapan Peminjaman Barang</div>
@@ -365,19 +235,16 @@
       </div>
     </div>
 
-    <footer>
-      Copyright web by sanrezt.creativ 2026 versi 12.1
-    </footer>
+    <footer>Copyright web by sanrezt.creativ 2026 versi 12.1</footer>
   </div>
 
   <script>
+    // MASUKKAN LINK HASIL DEPLOY BARU ANDA DI SINI
     const SCRIPT_URL = "https://script.google.com/macros/s/AKfycbxGs_3yC83d_oy0HFz33tE_Ek4Ec9tSU9JqeQWw71sTK3-I5GzqBqueocxMFMWVs3Vk/exec";
     const DEFAULT_PASS = "1234567890";
     let transactions = [];
 
-    if (sessionStorage.getItem("mixue_is_logged_in") === "true") {
-      showApp();
-    }
+    if (sessionStorage.getItem("mixue_is_logged_in") === "true") showApp();
 
     document.getElementById("loginForm").addEventListener("submit", function(e) {
       e.preventDefault();
@@ -412,9 +279,7 @@
       loadData();
     }
 
-    // Callback JSONP (Penggabungan Pintar Data Cloud & Lokal)
     window.handleDataResponse = function(serverData) {
-      // Gabungkan data dari Cloud dengan data lokal yang baru saja ditambah
       const mergedMap = new Map();
       serverData.forEach(item => mergedMap.set(String(item.id), item));
       transactions.forEach(item => mergedMap.set(String(item.id), item));
@@ -424,7 +289,6 @@
       renderTable();
     };
 
-    // LOAD DATA VIA JSONP
     function loadData() {
       setCloudStatus("", "Proses...");
       const oldScript = document.getElementById('jsonpScript');
@@ -433,20 +297,15 @@
       const script = document.createElement('script');
       script.id = 'jsonpScript';
       script.src = SCRIPT_URL + '?callback=handleDataResponse&t=' + Date.now();
-      script.onerror = function() {
-        setCloudStatus("offline", "Terputus");
-      };
+      script.onerror = function() { setCloudStatus("offline", "Terputus"); };
       document.body.appendChild(script);
     }
 
-    // SIMPAN DATA KEKAL (TIDAK AKAN HILANG)
     document.getElementById('loanForm').addEventListener('submit', function(e) {
       e.preventDefault();
-      
       const btn = document.getElementById('btnSubmit');
       btn.disabled = true;
       btn.innerText = 'Menyimpan...';
-      setCloudStatus("", "Menyimpan...");
 
       const newTransaction = {
         action: "add",
@@ -461,17 +320,14 @@
         qtyUnit: document.getElementById('qty').value + " " + document.getElementById('unit').value
       };
 
-      // 1. Masukkan ke memori & tampilkan di tabel rekapan secara instan
       transactions.push(newTransaction);
       renderTable();
 
-      // Reset Input Form
       document.getElementById('itemSelect').value = '';
       document.getElementById('qty').value = '';
       document.getElementById('fromStore').value = '';
       document.getElementById('toStore').value = '';
 
-      // 2. Kirim ke Google Sheets di latar belakang
       fetch(SCRIPT_URL, {
         method: "POST",
         mode: "no-cors",
@@ -482,21 +338,16 @@
         btn.disabled = false;
         btn.innerText = 'Simpan Ke Database';
         setCloudStatus("online", "Connected");
-        // Sinkronkan ulang tanpa menghapus data baru
         setTimeout(loadData, 3000);
       })
       .catch(() => {
         btn.disabled = false;
         btn.innerText = 'Simpan Ke Database';
-        setCloudStatus("offline", "Terputus");
       });
     });
 
-    // HAPUS DATA
     function deleteTransaction(id) {
-      if (confirm('Yakin ingin menghapus data transaksi ini dari database?')) {
-        setCloudStatus("", "Menghapus...");
-        
+      if (confirm('Hapus transaksi ini?')) {
         transactions = transactions.filter(t => String(t.id) !== String(id));
         renderTable();
 
@@ -506,11 +357,7 @@
           headers: { "Content-Type": "text/plain;charset=utf-8" },
           body: JSON.stringify({ action: "delete", id: id })
         })
-        .then(() => {
-          setCloudStatus("online", "Connected");
-          setTimeout(loadData, 3000);
-        })
-        .catch(() => setCloudStatus("offline", "Terputus"));
+        .then(() => setTimeout(loadData, 3000));
       }
     }
 
@@ -523,7 +370,7 @@
       filteredData.sort((a, b) => new Date(a.date) - new Date(b.date));
 
       if (filteredData.length === 0) {
-        tbody.innerHTML = `<tr><td colspan="7" style="text-align:center; color: #888; padding: 10px;">Tidak ada data transaksi pada periode bulan ini.</td></tr>`;
+        tbody.innerHTML = `<tr><td colspan="7" style="text-align:center; color: #888; padding: 10px;">Tidak ada data transaksi.</td></tr>`;
         return;
       }
 
@@ -554,10 +401,7 @@
       const selectedMonth = document.getElementById('monthFilter').value;
       const filteredData = transactions.filter(t => t.date && String(t.date).startsWith(selectedMonth));
 
-      if(filteredData.length === 0) {
-        alert("Tidak ada data untuk diunduh!");
-        return;
-      }
+      if(filteredData.length === 0) return alert("Tidak ada data untuk diunduh!");
 
       let csvContent = "data:text/csv;charset=utf-8,Tanggal,Jenis,Nama Barang,Jumlah,Dari Toko,Ke Toko\n";
       filteredData.forEach(t => {
