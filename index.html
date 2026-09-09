@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Pangkalan Data Peminjaman Mixue Sukorejo Store</title>
+  <title>PANGKALAN DATA MIXUE SUKOREJO</title>
   
   <!-- Manifest & Theme Color untuk PWA -->
   <link rel="manifest" href="data:application/manifest+json;utf8,{%22name%22:%22Mixue%20Loan%22,%22short_name%22:%22Mixue%20Loan%22,%22start_url%22:%22https://script.google.com/macros/s/AKfycbxJKyKgaXlL4FE6bGUau5Ms4lgmBypuyTjtvqtYxhCOmnDWnfID5I47XJKaKCEhJg8e/exec%22,%22display%22:%22standalone%22,%22background_color%22:%22%23e60012%22,%22theme_color%22:%22%23e60012%22}">
@@ -19,8 +19,8 @@
       --text-color: #333333;
     }
 
-    * { box-sizing: border-box; margin: 0; padding: 0; font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; }
-    body { background-color: var(--bg-color); color: var(--text-color); padding: 20px; }
+    * { box-sizing: border-box; margin: 0; padding: 0; font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif; }
+    body { background-color: var(--bg-color); color: var(--text-color); padding: 12px; }
     .container { max-width: 1000px; margin: 0 auto; }
 
     /* LAYAR LOGIN */
@@ -33,26 +33,23 @@
 
     .login-card {
       background: white;
-      padding: 30px 25px;
+      padding: 30px 20px;
       border-radius: 12px;
       box-shadow: 0 4px 15px rgba(0,0,0,0.1);
       width: 100%;
-      max-width: 400px;
+      max-width: 380px;
       text-align: center;
       border: 1px solid var(--border-color);
     }
 
-    .login-logo {
-      font-size: 4rem;
-      margin-bottom: 10px;
-    }
+    .login-logo { font-size: 3.5rem; margin-bottom: 10px; }
 
     .login-title {
-      font-size: 1.2rem;
+      font-size: 1.1rem;
       font-weight: bold;
       color: var(--primary);
       margin-bottom: 20px;
-      line-height: 1.4;
+      line-height: 1.3;
     }
 
     .error-msg {
@@ -62,74 +59,86 @@
       display: none;
     }
 
-    /* APLIKASI UTAMA (DILINDUNGI LOGIN) */
-    #mainApp {
-      display: none;
-    }
+    /* APLIKASI UTAMA */
+    #mainApp { display: none; }
 
     header {
       text-align: center;
-      margin-bottom: 25px;
+      margin-bottom: 15px;
       background: var(--primary);
       color: white;
-      padding: 20px;
+      padding: 18px 12px;
       border-radius: 12px;
-      box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+      box-shadow: 0 3px 6px rgba(0,0,0,0.1);
       position: relative;
     }
-    header h1 { font-size: 1.5rem; margin-bottom: 5px; }
+    
+    header h1 {
+      font-size: 1.15rem;
+      font-weight: 800;
+      margin-bottom: 4px;
+      padding-right: 55px; /* Beri ruang untuk tombol logout */
+      text-align: left;
+      line-height: 1.3;
+    }
+    
+    header p {
+      font-size: 0.75rem;
+      opacity: 0.9;
+      text-align: left;
+    }
 
     .btn-logout {
       position: absolute;
-      right: 15px;
-      top: 15px;
-      background: rgba(255,255,255,0.2);
+      right: 12px;
+      top: 18px;
+      background: rgba(255,255,255,0.25);
       color: white;
-      border: 1px solid white;
-      padding: 5px 10px;
+      border: 1px solid rgba(255,255,255,0.5);
+      padding: 6px 10px;
       border-radius: 6px;
       cursor: pointer;
       font-size: 0.75rem;
+      font-weight: 600;
     }
 
     .card {
       background: var(--card-bg);
       border-radius: 12px;
-      padding: 20px;
-      margin-bottom: 25px;
-      box-shadow: 0 2px 8px rgba(0,0,0,0.05);
+      padding: 16px;
+      margin-bottom: 15px;
+      box-shadow: 0 2px 6px rgba(0,0,0,0.04);
       border: 1px solid var(--border-color);
     }
 
     .card-title {
-      font-size: 1.2rem;
-      font-weight: 600;
-      margin-bottom: 15px;
+      font-size: 1.05rem;
+      font-weight: 700;
+      margin-bottom: 12px;
       color: var(--primary);
       border-bottom: 2px solid var(--bg-color);
-      padding-bottom: 8px;
+      padding-bottom: 6px;
     }
 
     .form-grid {
       display: grid;
-      grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
-      gap: 15px;
+      grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+      gap: 12px;
     }
 
     .form-group { display: flex; flex-direction: column; }
-    label { font-size: 0.85rem; font-weight: 600; margin-bottom: 6px; color: #555; }
+    label { font-size: 0.8rem; font-weight: 600; margin-bottom: 4px; color: #444; }
 
     input, select {
-      padding: 10px 12px;
+      padding: 9px 10px;
       border: 1px solid #ccc;
       border-radius: 6px;
-      font-size: 0.95rem;
+      font-size: 0.9rem;
       outline: none;
-      transition: border-color 0.2s;
     }
     input:focus, select:focus { border-color: var(--primary); }
 
-    .qty-group { display: flex; gap: 8px; }
+    .qty-group { display: flex; gap: 6px; }
     .qty-group input { flex: 2; }
     .qty-group select { flex: 1; }
 
@@ -137,69 +146,73 @@
       background-color: var(--primary);
       color: white;
       border: none;
-      padding: 12px 20px;
+      padding: 11px;
       border-radius: 6px;
-      font-size: 1rem;
+      font-size: 0.95rem;
       font-weight: bold;
       cursor: pointer;
       width: 100%;
-      margin-top: 15px;
-      transition: background-color 0.2s;
+      margin-top: 12px;
     }
-    .btn:hover { background-color: var(--primary-hover); }
 
     .btn-excel {
       background-color: #1d6f42;
       color: white;
       border: none;
-      padding: 8px 15px;
+      padding: 7px 12px;
       border-radius: 6px;
       font-weight: bold;
       cursor: pointer;
-      font-size: 0.85rem;
+      font-size: 0.8rem;
+      white-space: nowrap;
     }
-    .btn-excel:hover { background-color: #155231; }
 
     .filter-container {
       display: flex;
       justify-content: space-between;
       align-items: center;
       flex-wrap: wrap;
-      gap: 10px;
-      margin-bottom: 15px;
+      gap: 8px;
+      margin-bottom: 12px;
     }
 
     .summary-card {
       background: white;
       border-radius: 12px;
-      padding: 20px;
-      box-shadow: 0 2px 8px rgba(0,0,0,0.05);
+      padding: 14px;
+      box-shadow: 0 2px 6px rgba(0,0,0,0.04);
       border: 1px solid var(--border-color);
     }
 
-    .table-container { width: 100%; overflow-x: visible; }
+    .table-container { width: 100%; }
 
     table {
       width: 100%;
       border-collapse: collapse;
-      font-size: 0.85rem;
+      font-size: 0.75rem;
       table-layout: fixed;
     }
 
     th, td {
-      border: 1px solid #ddd;
-      padding: 8px 6px;
+      border: 1px solid #e2e8f0;
+      padding: 6px 3px;
       text-align: left;
       word-wrap: break-word;
+      overflow-wrap: break-word;
     }
 
-    th { background-color: #f2f2f2; color: #333; font-weight: bold; }
+    th {
+      background-color: #f1f5f9;
+      color: #334155;
+      font-weight: 700;
+      text-align: center;
+    }
 
     .badge {
-      display: inline-block;
-      padding: 3px 6px;
-      border-radius: 4px;
-      font-size: 0.75rem;
+      display: block;
+      padding: 2px 0;
+      border-radius: 3px;
+      font-size: 0.7rem;
       font-weight: bold;
       text-align: center;
     }
@@ -210,18 +223,20 @@
       background: #ff4d4f;
       color: white;
       border: none;
-      padding: 4px 8px;
+      padding: 3px 6px;
       border-radius: 4px;
       cursor: pointer;
-      font-size: 0.75rem;
+      font-size: 0.7rem;
+      font-weight: bold;
     }
 
-    .col-tgl { width: 11%; }
-    .col-tipe { width: 14%; }
-    .col-barang { width: 28%; }
-    .col-jml { width: 15%; }
-    .col-dari { width: 13%; }
-    .col-ke { width: 13%; }
+    /* Pengaturan Lebar Kolom HP agar Pas Presisi */
+    .col-tgl { width: 11%; text-align: center; }
+    .col-tipe { width: 15%; text-align: center; }
+    .col-barang { width: 32%; }
+    .col-jml { width: 14%; text-align: center; }
+    .col-dari { width: 11%; }
+    .col-ke { width: 11%; }
     .col-aksi { width: 6%; text-align: center; }
 
     .loading-overlay {
@@ -233,10 +248,10 @@
 
     footer {
       text-align: center;
-      margin-top: 25px;
-      padding: 15px;
-      font-size: 0.8rem;
-      color: #777;
+      margin-top: 20px;
+      padding: 10px;
+      font-size: 0.75rem;
+      color: #888;
     }
 
     @media print {
@@ -253,7 +268,7 @@
   <div id="loginScreen">
     <div class="login-card">
       <div class="login-logo">🍦</div>
-      <div class="login-title">Pangkalan Data Peminjaman Mixue Sukorejo Store</div>
+      <div class="login-title">PANGKALAN DATA MIXUE SUKOREJO</div>
       <form id="loginForm">
         <div class="form-group" style="text-align: left;">
           <label for="passwordInput">Password Akses</label>
@@ -269,7 +284,7 @@
   <div id="mainApp" class="container">
     <header>
       <button class="btn-logout" onclick="logout()">Keluar</button>
-      <h1>🍦 PANGKALAN DATA PEMINJAMAN MIXUE SUKOREJO STORE</h1>
+      <h1>🍦 PANGKALAN DATA MIXUE SUKOREJO</h1>
       <p>Pencatatan Pinjam Meminjam Barang Antar Toko</p>
     </header>
 
@@ -387,9 +402,9 @@
     <!-- HASIL REKAPAN -->
     <div class="summary-card">
       <div class="filter-container">
-        <div class="card-title" style="margin:0; border:none;">Rekapan Peminjaman Barang</div>
-        <div style="display: flex; gap: 10px; align-items: center;">
-          <input type="month" id="monthFilter" onchange="renderTable()">
+        <div class="card-title" style="margin:0; border:none; font-size:0.95rem;">Rekapan Peminjaman Barang</div>
+        <div style="display: flex; gap: 6px; align-items: center; width: 100%; justify-content: space-between; margin-top: 4px;">
+          <input type="month" id="monthFilter" onchange="renderTable()" style="flex:1; padding: 6px 8px;">
           <button class="btn-excel" onclick="exportToCSV()">📊 Download Excel</button>
         </div>
       </div>
@@ -398,12 +413,12 @@
         <table>
           <thead>
             <tr>
-              <th class="col-tgl">Tanggal</th>
+              <th class="col-tgl">Tgl</th>
               <th class="col-tipe">Jenis</th>
-              <th class="col-barang">Nama Barang</th>
-              <th class="col-jml">Jumlah</th>
-              <th class="col-dari">Dari Toko</th>
-              <th class="col-ke">Ke Toko</th>
+              <th class="col-barang">Barang</th>
+              <th class="col-jml">Jml</th>
+              <th class="col-dari">Dari</th>
+              <th class="col-ke">Ke</th>
               <th class="col-aksi">Aksi</th>
             </tr>
           </thead>
@@ -454,14 +469,12 @@
     }
 
     function initApp() {
-      // Set Default Tanggal ke Hari Ini
       const today = new Date().toISOString().split('T')[0];
       document.getElementById('date').value = today;
       document.getElementById('monthFilter').value = today.substring(0, 7);
       loadData();
     }
 
-    // Load Data dari Google Sheets saat aplikasi dibuka
     function loadData() {
       google.script.run.withSuccessHandler(function(data) {
         transactions = data;
@@ -469,7 +482,6 @@
       }).getTransactions();
     }
 
-    // Handle Form Submit (Tambah Data)
     document.getElementById('loanForm').addEventListener('submit', function(e) {
       e.preventDefault();
       
@@ -492,17 +504,15 @@
         btn.disabled = false;
         btn.innerText = 'Simpan Ke Database';
         
-        // Reset Form
         document.getElementById('itemSelect').value = '';
         document.getElementById('qty').value = '';
         document.getElementById('fromStore').value = '';
         document.getElementById('toStore').value = '';
         
-        loadData(); // Reload Data
+        loadData();
       }).addTransaction(newTransaction);
     });
 
-    // Fitur Hapus Transaksi
     function deleteTransaction(id) {
       if (confirm('Yakin ingin menghapus data transaksi ini dari database?')) {
         google.script.run.withSuccessHandler(function() {
@@ -511,7 +521,6 @@
       }
     }
 
-    // Render Tabel Rekapan
     function renderTable() {
       const selectedMonth = document.getElementById('monthFilter').value;
       const tbody = document.getElementById('transactionTable');
@@ -521,7 +530,7 @@
       filteredData.sort((a, b) => new Date(a.date) - new Date(b.date));
 
       if (filteredData.length === 0) {
-        tbody.innerHTML = `<tr><td colspan="7" style="text-align:center; color: #888;">Tidak ada data transaksi pada periode bulan ini.</td></tr>`;
+        tbody.innerHTML = `<tr><td colspan="7" style="text-align:center; color: #888; padding: 10px;">Tidak ada data transaksi pada periode bulan ini.</td></tr>`;
         return;
       }
 
@@ -532,10 +541,10 @@
 
         const tr = document.createElement('tr');
         tr.innerHTML = `
-          <td>${formattedDate}</td>
+          <td style="text-align:center;">${formattedDate}</td>
           <td><span class="badge ${badgeClass}">${t.type}</span></td>
           <td><b>${t.item}</b></td>
-          <td>${t.qtyUnit || (t.qty + ' ' + t.unit)}</td>
+          <td style="text-align:center;">${t.qtyUnit || (t.qty + ' ' + t.unit)}</td>
           <td>${t.fromStore}</td>
           <td>${t.toStore}</td>
           <td class="col-aksi"><button class="btn-delete" onclick="deleteTransaction(${t.id})">✕</button></td>
@@ -544,7 +553,6 @@
       });
     }
 
-    // Download Fitur Excel (CSV Export)
     function exportToCSV() {
       const selectedMonth = document.getElementById('monthFilter').value;
       const filteredData = transactions.filter(t => t.date.startsWith(selectedMonth));
