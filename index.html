@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Pinjam Meminjam Barang - Mixue Store</title>
+  <title>Pangkalan Data Peminjaman Mixue Sukorejo Store</title>
   
   <!-- Manifest & Theme Color untuk PWA -->
   <link rel="manifest" href="data:application/manifest+json;utf8,{%22name%22:%22Mixue%20Loan%22,%22short_name%22:%22Mixue%20Loan%22,%22start_url%22:%22https://script.google.com/macros/s/AKfycbxJKyKgaXlL4FE6bGUau5Ms4lgmBypuyTjtvqtYxhCOmnDWnfID5I47XJKaKCEhJg8e/exec%22,%22display%22:%22standalone%22,%22background_color%22:%22%23e60012%22,%22theme_color%22:%22%23e60012%22}">
@@ -23,6 +23,50 @@
     body { background-color: var(--bg-color); color: var(--text-color); padding: 20px; }
     .container { max-width: 1000px; margin: 0 auto; }
 
+    /* LAYAR LOGIN */
+    #loginScreen {
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      min-height: 80vh;
+    }
+
+    .login-card {
+      background: white;
+      padding: 30px 25px;
+      border-radius: 12px;
+      box-shadow: 0 4px 15px rgba(0,0,0,0.1);
+      width: 100%;
+      max-width: 400px;
+      text-align: center;
+      border: 1px solid var(--border-color);
+    }
+
+    .login-logo {
+      font-size: 4rem;
+      margin-bottom: 10px;
+    }
+
+    .login-title {
+      font-size: 1.2rem;
+      font-weight: bold;
+      color: var(--primary);
+      margin-bottom: 20px;
+      line-height: 1.4;
+    }
+
+    .error-msg {
+      color: red;
+      font-size: 0.85rem;
+      margin-top: 10px;
+      display: none;
+    }
+
+    /* APLIKASI UTAMA (DILINDUNGI LOGIN) */
+    #mainApp {
+      display: none;
+    }
+
     header {
       text-align: center;
       margin-bottom: 25px;
@@ -31,8 +75,22 @@
       padding: 20px;
       border-radius: 12px;
       box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+      position: relative;
     }
-    header h1 { font-size: 1.8rem; margin-bottom: 5px; }
+    header h1 { font-size: 1.5rem; margin-bottom: 5px; }
+
+    .btn-logout {
+      position: absolute;
+      right: 15px;
+      top: 15px;
+      background: rgba(255,255,255,0.2);
+      color: white;
+      border: 1px solid white;
+      padding: 5px 10px;
+      border-radius: 6px;
+      cursor: pointer;
+      font-size: 0.75rem;
+    }
 
     .card {
       background: var(--card-bg);
@@ -183,7 +241,7 @@
 
     @media print {
       body { background: white; padding: 0; }
-      .card, .btn-delete, .filter-container, .btn-excel { display: none; }
+      .card, .btn-delete, .filter-container, .btn-excel, .btn-logout { display: none; }
       .summary-card { border: none; box-shadow: none; padding: 0; }
       .col-aksi { display: none; }
     }
@@ -191,9 +249,27 @@
 </head>
 <body>
 
-  <div class="container">
+  <!-- HALAMAN LOGIN -->
+  <div id="loginScreen">
+    <div class="login-card">
+      <div class="login-logo">🍦</div>
+      <div class="login-title">Pangkalan Data Peminjaman Mixue Sukorejo Store</div>
+      <form id="loginForm">
+        <div class="form-group" style="text-align: left;">
+          <label for="passwordInput">Password Akses</label>
+          <input type="password" id="passwordInput" placeholder="Masukkan Password..." required>
+        </div>
+        <button type="submit" class="btn">Masuk Aplikasi</button>
+        <div id="errorMsg" class="error-msg">Password salah! Silakan coba lagi.</div>
+      </form>
+    </div>
+  </div>
+
+  <!-- APLIKASI UTAMA -->
+  <div id="mainApp" class="container">
     <header>
-      <h1>🍦 MIXUE SUKOREJO STORE</h1>
+      <button class="btn-logout" onclick="logout()">Keluar</button>
+      <h1>🍦 PANGKALAN DATA PEMINJAMAN MIXUE SUKOREJO STORE</h1>
       <p>Pencatatan Pinjam Meminjam Barang Antar Toko</p>
     </header>
 
@@ -345,14 +421,47 @@
   </div>
 
   <script>
+    const DEFAULT_PASS = "1234567890";
     let transactions = [];
 
-    // Set Default Tanggal ke Hari Ini
-    const today = new Date().toISOString().split('T')[0];
-    document.getElementById('date').value = today;
-    document.getElementById('monthFilter').value = today.substring(0, 7);
+    // Cek Login Saat Aplikasi Dibuka
+    if (sessionStorage.getItem("mixue_is_logged_in") === "true") {
+      showApp();
+    }
 
-    // Load Data dari Google Sheets saat aplikasi pertama kali dibuka
+    // Handle Form Login
+    document.getElementById("loginForm").addEventListener("submit", function(e) {
+      e.preventDefault();
+      const inputPass = document.getElementById("passwordInput").value;
+      
+      if (inputPass === DEFAULT_PASS) {
+        sessionStorage.setItem("mixue_is_logged_in", "true");
+        showApp();
+      } else {
+        document.getElementById("errorMsg").style.display = "block";
+      }
+    });
+
+    function showApp() {
+      document.getElementById("loginScreen").style.display = "none";
+      document.getElementById("mainApp").style.display = "block";
+      initApp();
+    }
+
+    function logout() {
+      sessionStorage.removeItem("mixue_is_logged_in");
+      location.reload();
+    }
+
+    function initApp() {
+      // Set Default Tanggal ke Hari Ini
+      const today = new Date().toISOString().split('T')[0];
+      document.getElementById('date').value = today;
+      document.getElementById('monthFilter').value = today.substring(0, 7);
+      loadData();
+    }
+
+    // Load Data dari Google Sheets saat aplikasi dibuka
     function loadData() {
       google.script.run.withSuccessHandler(function(data) {
         transactions = data;
@@ -393,7 +502,7 @@
       }).addTransaction(newTransaction);
     });
 
-    // Hapus Transaksi
+    // Fitur Hapus Transaksi
     function deleteTransaction(id) {
       if (confirm('Yakin ingin menghapus data transaksi ini dari database?')) {
         google.script.run.withSuccessHandler(function() {
@@ -402,7 +511,7 @@
       }
     }
 
-    // Render Tabel
+    // Render Tabel Rekapan
     function renderTable() {
       const selectedMonth = document.getElementById('monthFilter').value;
       const tbody = document.getElementById('transactionTable');
@@ -459,9 +568,6 @@
       link.click();
       document.body.removeChild(link);
     }
-
-    // Load data otomatis saat dibuka
-    loadData();
   </script>
 </body>
 </html>
