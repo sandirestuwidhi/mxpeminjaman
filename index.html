@@ -5,7 +5,6 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>PANGKALAN DATA MIXUE SUKOREJO</title>
   
-  <!-- Manifest & Theme Color untuk PWA (Integrated dengan Link Terbaru) -->
   <link rel="manifest" href="data:application/manifest+json;utf8,{%22name%22:%22Mixue%20Loan%22,%22short_name%22:%22Mixue%20Loan%22,%22start_url%22:%22https://script.google.com/macros/s/AKfycbxGs_3yC83d_oy0HFz33tE_Ek4Ec9tSU9JqeQWw71sTK3-I5GzqBqueocxMFMWVs3Vk/exec%22,%22display%22:%22standalone%22,%22background_color%22:%22%23e60012%22,%22theme_color%22:%22%23e60012%22}">
   <meta name="theme-color" content="#e60012">
 
@@ -470,7 +469,6 @@
   </div>
 
   <script>
-    // Link Google Apps Script Terbaru Anda
     const SCRIPT_URL = "https://script.google.com/macros/s/AKfycbxGs_3yC83d_oy0HFz33tE_Ek4Ec9tSU9JqeQWw71sTK3-I5GzqBqueocxMFMWVs3Vk/exec";
     const DEFAULT_PASS = "1234567890";
     let transactions = [];
@@ -512,23 +510,29 @@
       loadData();
     }
 
-    // AMBIL DATA
-    function loadData() {
-      setCloudStatus("", "Proses...");
-      fetch(SCRIPT_URL)
-        .then(res => res.json())
-        .then(data => {
-          transactions = data;
-          setCloudStatus("online", "Connected");
-          renderTable();
-        })
-        .catch(err => {
-          setCloudStatus("offline", "Terputus");
-          console.error(err);
-        });
+    // Callback JSONP untuk menerima data dari Google Apps Script
+    function handleDataResponse(data) {
+      transactions = data;
+      setCloudStatus("online", "Connected");
+      renderTable();
     }
 
-    // SIMPAN DATA VIA FETCH
+    // AMBIL DATA VIA JSONP (Anti-Delay & Anti-CORS)
+    function loadData() {
+      setCloudStatus("", "Proses...");
+      const oldScript = document.getElementById('jsonpScript');
+      if (oldScript) oldScript.remove();
+
+      const script = document.createElement('script');
+      script.id = 'jsonpScript';
+      script.src = `${SCRIPT_URL}?callback=handleDataResponse&t=${Date.now()}`;
+      script.onerror = function() {
+        setCloudStatus("offline", "Terputus");
+      };
+      document.body.appendChild(script);
+    }
+
+    // SIMPAN DATA LOKAL LANGSUNG + KIRIM KE CLOUD
     document.getElementById('loanForm').addEventListener('submit', function(e) {
       e.preventDefault();
       
@@ -537,7 +541,7 @@
       btn.innerText = 'Menyimpan...';
       setCloudStatus("", "Menyimpan...");
 
-      const payload = {
+      const newTransaction = {
         action: "add",
         id: Date.now(),
         date: document.getElementById('date').value,
@@ -546,40 +550,52 @@
         qty: document.getElementById('qty').value,
         unit: document.getElementById('unit').value,
         fromStore: document.getElementById('fromStore').value.trim(),
-        toStore: document.getElementById('toStore').value.trim()
+        toStore: document.getElementById('toStore').value.trim(),
+        qtyUnit: document.getElementById('qty').value + " " + document.getElementById('unit').value
       };
 
+      // 1. Tampilkan Langsung ke Tabel Rekapan
+      transactions.push(newTransaction);
+      renderTable();
+
+      // Reset Form Input
+      document.getElementById('itemSelect').value = '';
+      document.getElementById('qty').value = '';
+      document.getElementById('fromStore').value = '';
+      document.getElementById('toStore').value = '';
+
+      // 2. Kirim ke Google Sheets di Background
       fetch(SCRIPT_URL, {
         method: "POST",
         mode: "no-cors",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify(payload)
+        body: JSON.stringify(newTransaction)
       })
       .then(() => {
         btn.disabled = false;
         btn.innerText = 'Simpan Ke Database';
         setCloudStatus("online", "Connected");
-        alert("✅ Transaksi berhasil dikirim ke Cloud!");
-        
-        document.getElementById('itemSelect').value = '';
-        document.getElementById('qty').value = '';
-        document.getElementById('fromStore').value = '';
-        document.getElementById('toStore').value = '';
-        
-        setTimeout(loadData, 1500);
+        // Reload data dari cloud setelah 2 detik untuk menyinkronkan ID
+        setTimeout(loadData, 2000);
       })
       .catch(err => {
         btn.disabled = false;
         btn.innerText = 'Simpan Ke Database';
         setCloudStatus("offline", "Error");
-        alert("❌ Gagal mengirim data!");
+        alert("❌ Gagal mengirim data ke Cloud!");
       });
     });
 
-    // HAPUS DATA VIA FETCH
+    // HAPUS DATA
     function deleteTransaction(id) {
       if (confirm('Yakin ingin menghapus data transaksi ini dari database?')) {
         setCloudStatus("", "Menghapus...");
+        
+        // Hapus langsung dari tabel lokal
+        transactions = transactions.filter(t => String(t.id) !== String(id));
+        renderTable();
+
+        // Hapus dari Google Sheets
         fetch(SCRIPT_URL, {
           method: "POST",
           mode: "no-cors",
@@ -588,7 +604,7 @@
         })
         .then(() => {
           setCloudStatus("online", "Connected");
-          setTimeout(loadData, 1500);
+          setTimeout(loadData, 2000);
         })
         .catch(() => setCloudStatus("offline", "Error"));
       }
