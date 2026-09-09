@@ -412,14 +412,19 @@
       loadData();
     }
 
-    // Callback JSONP
-    window.handleDataResponse = function(data) {
-      transactions = data;
+    // Callback JSONP (Penggabungan Pintar Data Cloud & Lokal)
+    window.handleDataResponse = function(serverData) {
+      // Gabungkan data dari Cloud dengan data lokal yang baru saja ditambah
+      const mergedMap = new Map();
+      serverData.forEach(item => mergedMap.set(String(item.id), item));
+      transactions.forEach(item => mergedMap.set(String(item.id), item));
+
+      transactions = Array.from(mergedMap.values());
       setCloudStatus("online", "Connected");
       renderTable();
     };
 
-    // LOAD DATA VIA JSONP (Aman & Connected)
+    // LOAD DATA VIA JSONP
     function loadData() {
       setCloudStatus("", "Proses...");
       const oldScript = document.getElementById('jsonpScript');
@@ -434,7 +439,7 @@
       document.body.appendChild(script);
     }
 
-    // SIMPAN DATA (Langsung Tampil + Kirim Background)
+    // SIMPAN DATA KEKAL (TIDAK AKAN HILANG)
     document.getElementById('loanForm').addEventListener('submit', function(e) {
       e.preventDefault();
       
@@ -445,7 +450,7 @@
 
       const newTransaction = {
         action: "add",
-        id: Date.now(),
+        id: String(Date.now()),
         date: document.getElementById('date').value,
         type: document.getElementById('type').value,
         item: document.getElementById('itemSelect').value.toUpperCase().trim(),
@@ -456,7 +461,7 @@
         qtyUnit: document.getElementById('qty').value + " " + document.getElementById('unit').value
       };
 
-      // 1. Tampilkan data langsung di tabel rekapan
+      // 1. Masukkan ke memori & tampilkan di tabel rekapan secara instan
       transactions.push(newTransaction);
       renderTable();
 
@@ -466,7 +471,7 @@
       document.getElementById('fromStore').value = '';
       document.getElementById('toStore').value = '';
 
-      // 2. Kirim ke Google Sheets
+      // 2. Kirim ke Google Sheets di latar belakang
       fetch(SCRIPT_URL, {
         method: "POST",
         mode: "no-cors",
@@ -477,7 +482,8 @@
         btn.disabled = false;
         btn.innerText = 'Simpan Ke Database';
         setCloudStatus("online", "Connected");
-        setTimeout(loadData, 2000);
+        // Sinkronkan ulang tanpa menghapus data baru
+        setTimeout(loadData, 3000);
       })
       .catch(() => {
         btn.disabled = false;
@@ -502,7 +508,7 @@
         })
         .then(() => {
           setCloudStatus("online", "Connected");
-          setTimeout(loadData, 2000);
+          setTimeout(loadData, 3000);
         })
         .catch(() => setCloudStatus("offline", "Terputus"));
       }
