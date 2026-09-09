@@ -1,0 +1,21 @@
+{
+  "short_name": "Mixue Loan",
+  "name": "Pinjam Meminjam Barang - Mixue Store",
+  "icons": [
+    {
+      "src": "icon-192.png",
+      "type": "image/png",
+      "sizes": "192x192"
+    },
+    {
+      "src": "icon-512.png",
+      "type": "image/png",
+      "sizes": "512x512"
+    }
+  ],
+  "start_url": "./index.html",
+  "background_color": "#e60012",
+  "theme_color": "#e60012",
+  "display": "standalone",
+  "orientation": "portrait"
+}
