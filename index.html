@@ -9,7 +9,6 @@
   <style>
     :root {
       --primary: #e60012;
-      --primary-hover: #cc0010;
       --bg-color: #f8f9fa;
       --card-bg: #ffffff;
       --border-color: #e0e0e0;
@@ -283,93 +282,75 @@
       loadData();
     }
 
-    // Menggunakan pemanggilan XMLHttpRequest alternatif agar aman di GitHub Pages
-    function loadData() {
-      setCloudStatus("", "Proses...");
-      const xhr = new XMLHttpRequest();
-      xhr.open("GET", SCRIPT_URL + "?t=" + Date.now(), true);
-      xhr.onload = function() {
-        if (xhr.status >= 200 && xhr.status < 400) {
-          try {
-            const data = JSON.parse(xhr.responseText);
-            const mergedMap = new Map();
-            data.forEach(item => mergedMap.set(String(item.id), item));
-            transactions.forEach(item => mergedMap.set(String(item.id), item));
-            transactions = Array.from(mergedMap.values());
-            setCloudStatus("online", "Connected");
-            renderTable();
-          } catch(e) {
-            setCloudStatus("online", "Connected");
-          }
-        } else {
-          setCloudStatus("online", "Connected");
-        }
-      };
-      xhr.onerror = function() {
-        // Fallback jika diblokir CORS: Tetap pertahankan status aktif agar inputan berjalan
+    // PENANGANAN RESPON DATA DARI GOOGLE APPS SCRIPT
+    window.handleResponse = function(response) {
+      if (Array.isArray(response)) {
+        transactions = response;
         setCloudStatus("online", "Connected");
-      };
-      xhr.send();
+        renderTable();
+      } else if (response && response.status === "success") {
+        setCloudStatus("online", "Connected");
+        loadData(); // Tarik data terbaru setelah simpan/hapus berhasil
+      } else {
+        setCloudStatus("offline", "Terputus");
+      }
+    };
+
+    // KIRIM DAN TERIMA DENGAN AMAN VIA SCRIPT TAG (BYPASS CORS)
+    function sendRequest(queryString) {
+      const oldScript = document.getElementById('jsonpScript');
+      if (oldScript) oldScript.remove();
+
+      const script = document.createElement('script');
+      script.id = 'jsonpScript';
+      script.src = SCRIPT_URL + '?callback=handleResponse&' + queryString + '&t=' + Date.now();
+      script.onerror = function() { setCloudStatus("offline", "Terputus"); };
+      document.body.appendChild(script);
     }
 
+    function loadData() {
+      setCloudStatus("", "Proses...");
+      sendRequest("action=read");
+    }
+
+    // SIMPAN DATA KE GOOGLE SHEETS
     document.getElementById('loanForm').addEventListener('submit', function(e) {
       e.preventDefault();
       const btn = document.getElementById('btnSubmit');
       btn.disabled = true;
       btn.innerText = 'Menyimpan...';
+      setCloudStatus("", "Menyimpan...");
 
-      const newTransaction = {
-        action: "add",
-        id: String(Date.now()),
-        date: document.getElementById('date').value,
-        type: document.getElementById('type').value,
-        item: document.getElementById('itemSelect').value.toUpperCase().trim(),
-        qty: document.getElementById('qty').value,
-        unit: document.getElementById('unit').value,
-        fromStore: document.getElementById('fromStore').value.trim(),
-        toStore: document.getElementById('toStore').value.trim(),
-        qtyUnit: document.getElementById('qty').value + " " + document.getElementById('unit').value
-      };
+      const id = Date.now();
+      const date = encodeURIComponent(document.getElementById('date').value);
+      const type = encodeURIComponent(document.getElementById('type').value);
+      const item = encodeURIComponent(document.getElementById('itemSelect').value.toUpperCase().trim());
+      const qty = encodeURIComponent(document.getElementById('qty').value);
+      const unit = encodeURIComponent(document.getElementById('unit').value);
+      const fromStore = encodeURIComponent(document.getElementById('fromStore').value.trim());
+      const toStore = encodeURIComponent(document.getElementById('toStore').value.trim());
 
-      // 1. Tampilkan langsung di tabel rekapan tanpa jeda
-      transactions.push(newTransaction);
-      renderTable();
+      const queryParams = `action=add&id=${id}&date=${date}&type=${type}&item=${item}&qty=${qty}&unit=${unit}&fromStore=${fromStore}&toStore=${toStore}`;
 
+      // Reset Isian Form
       document.getElementById('itemSelect').value = '';
       document.getElementById('qty').value = '';
       document.getElementById('fromStore').value = '';
       document.getElementById('toStore').value = '';
 
-      // 2. Kirim data via fetch no-cors
-      fetch(SCRIPT_URL, {
-        method: "POST",
-        mode: "no-cors",
-        headers: { "Content-Type": "text/plain;charset=utf-8" },
-        body: JSON.stringify(newTransaction)
-      })
-      .then(() => {
+      sendRequest(queryParams);
+
+      setTimeout(() => {
         btn.disabled = false;
         btn.innerText = 'Simpan Ke Database';
-        setCloudStatus("online", "Connected");
-      })
-      .catch(() => {
-        btn.disabled = false;
-        btn.innerText = 'Simpan Ke Database';
-        setCloudStatus("online", "Connected");
-      });
+      }, 1500);
     });
 
+    // HAPUS DATA DARI GOOGLE SHEETS
     function deleteTransaction(id) {
-      if (confirm('Hapus transaksi ini?')) {
-        transactions = transactions.filter(t => String(t.id) !== String(id));
-        renderTable();
-
-        fetch(SCRIPT_URL, {
-          method: "POST",
-          mode: "no-cors",
-          headers: { "Content-Type": "text/plain;charset=utf-8" },
-          body: JSON.stringify({ action: "delete", id: id })
-        });
+      if (confirm('Yakin ingin menghapus transaksi ini?')) {
+        setCloudStatus("", "Menghapus...");
+        sendRequest("action=delete&id=" + id);
       }
     }
 
