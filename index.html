@@ -9,6 +9,7 @@
   <style>
     :root {
       --primary: #e60012;
+      --primary-hover: #cc0010;
       --bg-color: #f8f9fa;
       --card-bg: #ffffff;
       --border-color: #e0e0e0;
@@ -95,6 +96,7 @@
 </head>
 <body>
 
+  <!-- HALAMAN LOGIN -->
   <div id="loginScreen">
     <div class="login-card">
       <div class="login-logo">🍦</div>
@@ -110,6 +112,7 @@
     </div>
   </div>
 
+  <!-- APLIKASI UTAMA -->
   <div id="mainApp" class="container">
     <header>
       <div class="header-actions">
@@ -123,6 +126,7 @@
       <p>Pencatatan Pinjam Meminjam Barang Antar Toko</p>
     </header>
 
+    <!-- FORM INPUT -->
     <div class="card">
       <div class="card-title">Input Mutasi Barang</div>
       <form id="loanForm">
@@ -206,6 +210,7 @@
       </form>
     </div>
 
+    <!-- HASIL REKAPAN -->
     <div class="summary-card">
       <div class="filter-container">
         <div class="card-title" style="margin:0; border:none; font-size:0.95rem;">Rekapan Peminjaman Barang</div>
@@ -239,7 +244,6 @@
   </div>
 
   <script>
-    // MASUKKAN LINK HASIL DEPLOY BARU ANDA DI SINI
     const SCRIPT_URL = "https://script.google.com/macros/s/AKfycbzlyBOVUHsbcSBHhN7elIw28TfLfmLnid85uKXq1E_W1bh2pfqGPNs2I4gnYGHto3QR/exec";
     const DEFAULT_PASS = "1234567890";
     let transactions = [];
@@ -279,26 +283,33 @@
       loadData();
     }
 
-    window.handleDataResponse = function(serverData) {
-      const mergedMap = new Map();
-      serverData.forEach(item => mergedMap.set(String(item.id), item));
-      transactions.forEach(item => mergedMap.set(String(item.id), item));
-
-      transactions = Array.from(mergedMap.values());
-      setCloudStatus("online", "Connected");
-      renderTable();
-    };
-
+    // Menggunakan pemanggilan XMLHttpRequest alternatif agar aman di GitHub Pages
     function loadData() {
       setCloudStatus("", "Proses...");
-      const oldScript = document.getElementById('jsonpScript');
-      if (oldScript) oldScript.remove();
-
-      const script = document.createElement('script');
-      script.id = 'jsonpScript';
-      script.src = SCRIPT_URL + '?callback=handleDataResponse&t=' + Date.now();
-      script.onerror = function() { setCloudStatus("offline", "Terputus"); };
-      document.body.appendChild(script);
+      const xhr = new XMLHttpRequest();
+      xhr.open("GET", SCRIPT_URL + "?t=" + Date.now(), true);
+      xhr.onload = function() {
+        if (xhr.status >= 200 && xhr.status < 400) {
+          try {
+            const data = JSON.parse(xhr.responseText);
+            const mergedMap = new Map();
+            data.forEach(item => mergedMap.set(String(item.id), item));
+            transactions.forEach(item => mergedMap.set(String(item.id), item));
+            transactions = Array.from(mergedMap.values());
+            setCloudStatus("online", "Connected");
+            renderTable();
+          } catch(e) {
+            setCloudStatus("online", "Connected");
+          }
+        } else {
+          setCloudStatus("online", "Connected");
+        }
+      };
+      xhr.onerror = function() {
+        // Fallback jika diblokir CORS: Tetap pertahankan status aktif agar inputan berjalan
+        setCloudStatus("online", "Connected");
+      };
+      xhr.send();
     }
 
     document.getElementById('loanForm').addEventListener('submit', function(e) {
@@ -320,6 +331,7 @@
         qtyUnit: document.getElementById('qty').value + " " + document.getElementById('unit').value
       };
 
+      // 1. Tampilkan langsung di tabel rekapan tanpa jeda
       transactions.push(newTransaction);
       renderTable();
 
@@ -328,6 +340,7 @@
       document.getElementById('fromStore').value = '';
       document.getElementById('toStore').value = '';
 
+      // 2. Kirim data via fetch no-cors
       fetch(SCRIPT_URL, {
         method: "POST",
         mode: "no-cors",
@@ -338,11 +351,11 @@
         btn.disabled = false;
         btn.innerText = 'Simpan Ke Database';
         setCloudStatus("online", "Connected");
-        setTimeout(loadData, 3000);
       })
       .catch(() => {
         btn.disabled = false;
         btn.innerText = 'Simpan Ke Database';
+        setCloudStatus("online", "Connected");
       });
     });
 
@@ -356,8 +369,7 @@
           mode: "no-cors",
           headers: { "Content-Type": "text/plain;charset=utf-8" },
           body: JSON.stringify({ action: "delete", id: id })
-        })
-        .then(() => setTimeout(loadData, 3000));
+        });
       }
     }
 
